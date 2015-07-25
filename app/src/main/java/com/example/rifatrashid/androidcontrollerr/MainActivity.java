@@ -57,7 +57,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressNewMotor = progress - 30;
-                if ((progressNewMotor - progressOldMotor) >= 6) {
+                if ((progressNewMotor - progressOldMotor) >= 4) {
                     progressOldMotor = progressNewMotor;
                     motorSpeedValue = progress - 30;
                     if (motorSpeedValue >= 0) {
