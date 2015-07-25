@@ -19,14 +19,14 @@ public class MainActivity extends ActionBarActivity {
     InetAddress IPAddress = null;
     DatagramSocket clientSocket = null;
     final String IP = "192.168.1.3";
-    final int PORT = 9595;
+    final int PORT = 9898;
     int motorSpeedValue = 0;
     int servoSpeedValue = 0;
     private boolean isConnected = false;
     private int progressNewMotor = 0;
     private int progressOldMotor = 0;
     private int progressNewServo = 0;
-    private int progressOldServo = 0;
+    private int progressOldServo = 90;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,18 +88,21 @@ public class MainActivity extends ActionBarActivity {
         servoControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                progressNewServo = progress;
-                if((progressNewServo - progressOldServo) >= 6){
-                    servoSpeedValue = progress - 30;
+                progressNewServo = progress ;
+                if((progressNewServo - progressOldServo) >= 20){
+                    servoSpeedValue = progress - 60;
                     if (servoSpeedValue >= 0) {
                         try {
-                            sendPacket("_servoA_" + String.valueOf(servoSpeedValue) + "_0_");
+                            sendPacket("_servoA_" + String.valueOf(servoSpeedValue) + "_1_");
+                            progressOldServo = progressNewServo;
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     } else if (servoSpeedValue < 0) {
                         try {
-                            sendPacket("_servoA_" + String.valueOf(servoSpeedValue) + "_1_");
+                            servoSpeedValue = -servoSpeedValue;
+                            sendPacket("_servoA_" + String.valueOf(servoSpeedValue) + "_0_");
+                            progressOldServo = progressNewServo;
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -114,7 +117,7 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                servoControl.setProgress(30);
+                servoControl.setProgress(60);
                 try {
                     sendPacket("_servoA_" + String.valueOf(0) + "_0_");
                 } catch (Exception e) {
