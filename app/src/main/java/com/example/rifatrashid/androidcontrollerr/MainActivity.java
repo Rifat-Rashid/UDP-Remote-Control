@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SeekBar;
 
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
@@ -18,6 +19,10 @@ public class MainActivity extends ActionBarActivity {
     InetAddress IPAddress = null;
     DatagramSocket clientSocket = null;
     final String IP = "192.168.1.3";
+    final int PORT = 9595;
+    int motorSpeedValue = 0;
+    int servoSpeedValue = 0;
+    private boolean isConnected = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +33,18 @@ public class MainActivity extends ActionBarActivity {
         //Setup basic networking stuff...
         try {
             setUpConnection();
+            isConnected = true;
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        if(isConnected){
+            try {
+                //Set servo and motor speeds to 0
+                sendPacket("_escA_0_");
+                sendPacket("_servoA_0_1_");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         //End
         motorControl = (SeekBar) findViewById(R.id.escControl);
@@ -37,7 +52,14 @@ public class MainActivity extends ActionBarActivity {
         motorControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
+                motorSpeedValue = progress - 30;
+                if(motorSpeedValue >= 0) {
+                    try {
+                        sendPacket("_escA_" + String.valueOf(motorSpeedValue) + "_");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
 
             @Override
@@ -53,7 +75,20 @@ public class MainActivity extends ActionBarActivity {
         servoControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
+                servoSpeedValue = progress - 30;
+                if(servoSpeedValue >= 0){
+                    try {
+                        sendPacket("_servoA_" + String.valueOf(servoSpeedValue) + "_0_");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }else if (servoSpeedValue < 0){
+                    try {
+                        sendPacket("_servoA_" + String.valueOf(servoSpeedValue) + "_1_");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
 
             @Override
@@ -93,5 +128,12 @@ public class MainActivity extends ActionBarActivity {
     private void setUpConnection() throws Exception{
         IPAddress = InetAddress.getByName(IP);
         clientSocket = new DatagramSocket();
+    }
+
+    private void sendPacket(String message) throws Exception{
+        String sendMessage = message;
+        byte[] sendData = sendMessage.getBytes();
+        DatagramPacket sendPacket = new DatagramPacket(sendData, sendMessage.length(), IPAddress, PORT);
+        Thread t = new Thread(new threadedPacketSender(sendPacket));
     }
 }
