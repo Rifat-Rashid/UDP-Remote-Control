@@ -12,12 +12,12 @@
         android:id="@+id/rightCircleUnderLay"
         android:background="@drawable/circles"
         android:layout_centerVertical="true"
-        android:layout_alignStart="@+id/seekBar" />
+        android:layout_alignStart="@+id/servoControl" />
 
     <SeekBar
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:id="@+id/seekBar"
+        android:id="@+id/servoControl"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
         android:max="60"
@@ -35,4 +35,17 @@
         android:layout_marginStart="39dp"
         android:layout_alignTop="@+id/rightCircleUnderLay"
         android:layout_alignParentStart="true" />
+
+    <SeekBar
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/escControl"
+        android:max="60"
+        android:progress="30"
+        android:secondaryProgress="0"
+        android:progressDrawable="@drawable/progressbar"
+        android:thumb="@drawable/thumb_image"
+        android:layout_alignTop="@+id/servoControl"
+        android:layout_alignStart="@+id/leftCircleUnderLay"
+        android:rotation="270"/>
 </RelativeLayout>
