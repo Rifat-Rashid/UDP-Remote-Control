@@ -78,6 +78,11 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 motorControl.setProgress(30);
+                try {
+                    sendPacket("_escA_" + String.valueOf(0) + "_");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
         servoControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -110,6 +115,11 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 servoControl.setProgress(30);
+                try {
+                    sendPacket("_servoA_" + String.valueOf(0) + "_0_");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
