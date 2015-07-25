@@ -57,7 +57,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressNewMotor = progress - 30;
-                if ((progressNewMotor - progressOldMotor) >= 5) {
+                if ((progressNewMotor - progressOldMotor) >= 6) {
                     progressOldMotor = progressNewMotor;
                     motorSpeedValue = progress - 30;
                     if (motorSpeedValue >= 0) {
@@ -84,7 +84,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressNewServo = progress;
-                if((progressNewServo - progressOldServo) >= 5){
+                if((progressNewServo - progressOldServo) >= 6){
                     servoSpeedValue = progress - 30;
                     if (servoSpeedValue >= 0) {
                         try {
