@@ -21,12 +21,18 @@ public class MainActivity extends ActionBarActivity {
     final String IP = "192.168.1.3";
     final int PORT = 9898;
     int motorSpeedValue = 0;
+    dataSender DataSender;
     int servoSpeedValue = 0;
     private boolean isConnected = false;
     private int progressNewMotor = 0;
-    private int progressOldMotor = 0;
+    private int progressOldMotor = 30;
     private int progressNewServo = 0;
     private int progressOldServo = 90;
+
+    public static int motorDirection = 0;
+    public static int servoDirection = 0;
+    public static int servoValue = 0;
+    public static int motorValue = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +50,11 @@ public class MainActivity extends ActionBarActivity {
         if (isConnected) {
             try {
                 //Set servo and motor speeds to 0
-                sendPacket("_escA_0_");
-                sendPacket("_servoA_0_1_");
+                //sendPacket("_escA_0_");
+                //sendPacket("_servoA_0_1_");
+                DataSender = new dataSender();
+                DataSender.setRunning(true);
+                DataSender.start();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -56,16 +65,21 @@ public class MainActivity extends ActionBarActivity {
         motorControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                progressNewMotor = progress - 30;
-                if ((progressNewMotor - progressOldMotor) >= 4) {
+                progressNewMotor = progress;
+                if (Math.abs(progressNewMotor - progressOldMotor) >= 4) {
                     progressOldMotor = progressNewMotor;
-                    motorSpeedValue = progress - 30;
-                    if (motorSpeedValue >= 0) {
+                    motorSpeedValue = progress;
+                    if (motorSpeedValue >= 30) {
                         try {
-                            sendPacket("_escA_" + String.valueOf(motorSpeedValue) + "_");
+                            motorValue = motorSpeedValue - 30;
+                            motorDirection = 1;
+                            //sendPacket("_escA_" + String.valueOf(motorSpeedValue - 30) + "_");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                    }else{
+                        motorDirection = 0;
+                        motorValue = 30 - motorSpeedValue;
                     }
                 }
             }
@@ -79,7 +93,8 @@ public class MainActivity extends ActionBarActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 motorControl.setProgress(30);
                 try {
-                    sendPacket("_escA_" + String.valueOf(0) + "_");
+                    motorValue = 0;
+                    //sendPacket("_escA_" + String.valueOf(0) + "_");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -89,23 +104,29 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressNewServo = progress ;
-                if((progressNewServo - progressOldServo) >= 20){
-                    servoSpeedValue = progress - 60;
-                    if (servoSpeedValue >= 0) {
+                if(Math.abs(progressNewServo - progressOldServo) >= 10){
+                    servoSpeedValue = progress;
+                    if (servoSpeedValue >= 60) {
                         try {
-                            sendPacket("_servoA_" + String.valueOf(servoSpeedValue) + "_1_");
+                            servoDirection = 0;
+                            servoValue = (servoSpeedValue - 60);
+                            //sendPacket("_servoA_" + String.valueOf((servoSpeedValue - 60)) + "_0_");
                             progressOldServo = progressNewServo;
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                    } else if (servoSpeedValue < 0) {
+                    } else {
+
                         try {
-                            servoSpeedValue = -servoSpeedValue;
-                            sendPacket("_servoA_" + String.valueOf(servoSpeedValue) + "_0_");
+                            //System.out.println(servoSpeedValue);
+                            //sendPacket("_servoA_" + String.valueOf(60 - servoSpeedValue) + "_1_");
+                            servoDirection = 1;
+                            servoValue = (60 - servoSpeedValue);
                             progressOldServo = progressNewServo;
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+
                     }
                 }
             }
@@ -119,7 +140,8 @@ public class MainActivity extends ActionBarActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 servoControl.setProgress(60);
                 try {
-                    sendPacket("_servoA_" + String.valueOf(0) + "_0_");
+                    servoValue = 0;
+                    //sendPacket("_servoA_" + String.valueOf(0) + "_0_");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -160,5 +182,41 @@ public class MainActivity extends ActionBarActivity {
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendMessage.length(), IPAddress, PORT);
         Thread t = new Thread(new threadedPacketSender(sendPacket));
         t.start();
+    }
+
+    class dataSender extends Thread{
+
+        private boolean isRunning = false;
+
+        public dataSender(){
+
+        }
+        public void run() {
+            while(isRunning){
+                //Send data
+                try {
+                    sendPacket("_" + String.valueOf(motorDirection) + "_" + String.valueOf(motorValue) + "_" + String.valueOf(servoDirection) + "_" + String.valueOf(servoValue) + "_");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        private void sendPacket(String message) throws Exception {
+            String sendMessage = message;
+            byte[] sendData = sendMessage.getBytes();
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendMessage.length(), IPAddress, PORT);
+            clientSocket.send(sendPacket);
+            System.out.println("s");
+        }
+
+        public void setRunning(boolean b){
+            this.isRunning = b;
+        }
     }
 }
