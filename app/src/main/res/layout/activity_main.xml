@@ -6,6 +6,14 @@
     android:paddingBottom="0dp" tools:context=".MainActivity"
     android:background="#009688">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rightCircleUnderLay"
+        android:background="@drawable/circles"
+        android:layout_centerVertical="true"
+        android:layout_alignStart="@+id/seekBar" />
+
     <SeekBar
         android:layout_width="200dp"
         android:layout_height="wrap_content"
@@ -18,4 +26,13 @@
         android:progressDrawable="@drawable/progressbar"
         android:thumb="@drawable/thumb_image"
         android:layout_marginEnd="35dp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/leftCircleUnderLay"
+        android:background="@drawable/circles"
+        android:layout_marginStart="39dp"
+        android:layout_alignTop="@+id/rightCircleUnderLay"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
