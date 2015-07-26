@@ -111,6 +111,9 @@ public class MainActivity extends ActionBarActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressNewServo = progress;
                 if (Math.abs(progressNewServo - progressOldServo) >= 10) {
+                    DataSender = new dataSender();
+                    DataSender.setRunning(true);
+                    DataSender.start();
                     servoSpeedValue = progress;
                     if (servoSpeedValue >= 60) {
                         try {
