@@ -6,7 +6,11 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -28,6 +32,7 @@ public class MainActivity extends ActionBarActivity {
     private int progressOldMotor = 30;
     private int progressNewServo = 0;
     private int progressOldServo = 90;
+    private TextView signalText;
 
     public static int motorDirection = 0;
     public static int servoDirection = 0;
@@ -42,6 +47,35 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         getSupportActionBar().setElevation(0);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00796B")));
+        final Animation in = new AlphaAnimation(0.0f, 1.0f);
+        in.setDuration(2000);
+
+        final Animation out = new AlphaAnimation(1.0f, 0.0f);
+        out.setDuration(3000);
+
+        out.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                signalText.setText("");
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        AnimationSet animationSet = new AnimationSet(true);
+        animationSet.addAnimation(in);
+        animationSet.setStartOffset(3000);
+        animationSet.addAnimation(out);
+        signalText = (TextView) findViewById(R.id.signalText);
+
         //Setup basic networking stuff...
         try {
             setUpConnection();
@@ -51,6 +85,9 @@ public class MainActivity extends ActionBarActivity {
         }
         if (isConnected) {
             try {
+                signalText.setText("Connected to Server");
+                signalText.startAnimation(animationSet);
+
                 //Set servo and motor speeds to 0
                 //sendPacket("_escA_0_");
                 //sendPacket("_servoA_0_1_");
@@ -177,7 +214,6 @@ public class MainActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
