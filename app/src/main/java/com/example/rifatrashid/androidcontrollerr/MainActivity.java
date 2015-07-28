@@ -152,7 +152,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressNewServo = progress;
-                if (Math.abs(progressNewServo - progressOldServo) >= 30) {
+                if (Math.abs(progressNewServo - progressOldServo) >= 15) {
                     servoSpeedValue = progress;
                     if (servoSpeedValue >= 60) {
                         try {
