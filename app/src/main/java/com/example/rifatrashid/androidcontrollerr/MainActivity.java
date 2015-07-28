@@ -91,6 +91,9 @@ public class MainActivity extends ActionBarActivity {
                 //Set servo and motor speeds to 0
                 //sendPacket("_escA_0_");
                 //sendPacket("_servoA_0_1_");
+                DataSender = new dataSender();
+                DataSender.setRunning(true);
+                DataSender.start();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -103,7 +106,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressNewMotor = progress;
-                if (Math.abs(progressNewMotor - progressOldMotor) >= 5) {
+                if (Math.abs(progressNewMotor - progressOldMotor) >= 4) {
                     progressOldMotor = progressNewMotor;
                     motorSpeedValue = progress;
                     if (motorSpeedValue >= 30) {
@@ -149,12 +152,13 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 progressNewServo = progress;
-                if (Math.abs(progressNewServo - progressOldServo) >= 15) {
+                if (Math.abs(progressNewServo - progressOldServo) >= 30) {
                     servoSpeedValue = progress;
                     if (servoSpeedValue >= 60) {
                         try {
                             servoDirection = 0;
                             servoValue = (servoSpeedValue - 60);
+                            //servoValue =60;
                             DataSender = new dataSender();
                             DataSender.setRunning(true);
                             DataSender.start();
