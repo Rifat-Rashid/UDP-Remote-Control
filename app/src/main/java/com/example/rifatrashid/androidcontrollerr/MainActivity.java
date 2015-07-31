@@ -239,9 +239,9 @@ public class MainActivity extends ActionBarActivity {
         t.start();
     }
 
-    class dataSender extends Thread {
+            class dataSender extends Thread {
 
-        private boolean isRunning = false;
+            private boolean isRunning = false;
 
         public dataSender() {
 
